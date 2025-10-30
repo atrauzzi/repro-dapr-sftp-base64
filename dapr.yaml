@@ -1,0 +1,8 @@
+
+version: 1
+common:
+  resourcesPath: ./resources/
+apps:
+  - appID: uploader
+    appDirPath: ./Uploader/
+    command: ["dotnet", "run"]

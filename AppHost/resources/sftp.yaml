@@ -1,0 +1,27 @@
+# see: https://docs.dapr.io/reference/components-reference/supported-bindings/sftp/
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: sftp
+spec:
+  type: bindings.sftp
+  version: v1
+  metadata:
+    - name: rootPath
+      value: "/"
+    - name: address
+      value: "localhost:22002"
+    - name: username
+      value: "local"
+    - name: password
+      value: "zxczxc123"
+#    - name: privateKey
+#      value: "*****************"
+#    - name: privateKeyPassphrase
+#      value: "*****************"
+#    - name: hostPublicKey
+#      value: "*****************"
+#    - name: knownHostsFile
+#      value: "<string>"
+    - name: insecureIgnoreHostKey
+      value: "true"
