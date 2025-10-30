@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using Dapr.Client;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,33 +13,28 @@ var daprClient = app.Services.GetRequiredService<DaprClient>();
 
 await daprClient.WaitForSidecarAsync();
 
-do
+Console.WriteLine("Sending requests...");
+
+// note: string
+await daprClient.InvokeBindingAsync("sftp", "create", "Test", new Dictionary<string, string>
 {
-    var request = new DaprSftpRequest
-    {
-        operation = "create",
-        data = Convert.ToBase64String(Encoding.UTF8.GetBytes("Test")),
-        metadata = new Dictionary<string, string>
-        {
-            { "fileName", $"/{Guid.CreateVersion7().ToString()}" },
-        },
-    };
+    { "fileName", $"/{Guid.CreateVersion7().ToString()}-string" },
+});
 
-    var json = JsonSerializer.Serialize(request, new JsonSerializerOptions
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    });
-
-    Console.WriteLine("Sending request...");
-    await daprClient.InvokeBindingAsync("sftp", "create", request.data, request.metadata.AsReadOnly());
-    
-    await Task.Delay(2000);
-
-} while (true);
-
-public class DaprSftpRequest
+// note: Base64
+await daprClient.InvokeBindingAsync("sftp", "create", Convert.ToBase64String(Encoding.UTF8.GetBytes("Test")), new Dictionary<string, string>
 {
-    public required string operation { get; init; }
-    public required string data { get; init; }
-    public IDictionary<string, string> metadata { get; init; } = new Dictionary<string, string>();
-}
+    { "fileName", $"/{Guid.CreateVersion7().ToString()}-base64" },
+});
+
+// note: byte[]
+await daprClient.InvokeBindingAsync("sftp", "create", Encoding.UTF8.GetBytes("Test"), new Dictionary<string, string>
+{
+    { "fileName", $"/{Guid.CreateVersion7().ToString()}-bytes" },
+});
+
+// note: Streams not supported
+// await daprClient.InvokeBindingAsync("sftp", "create", new MemoryStream(Encoding.UTF8.GetBytes("Test")), new Dictionary<string, string>
+// {
+//     { "fileName", $"/{Guid.CreateVersion7().ToString()}-stream" },
+// });
